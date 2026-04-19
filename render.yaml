@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: documind-ai
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /api/v1/health
+    branch: main
+    autoDeploy: true
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: DEBUG
+        value: "false"
+      - key: CACHE_ENABLED
+        value: "false"
+      - key: MAX_FILE_SIZE_MB
+        value: "10"
+      - key: CLAUDE_MODEL
+        value: claude-sonnet-4-20250514
+      - key: CLAUDE_MAX_TOKENS
+        value: "2048"
+      - key: UPLOAD_DIR
+        value: /app/uploads
