@@ -32,12 +32,13 @@
 DocuMind AI is a production-grade REST API that extracts intelligence from documents using Claude AI (claude-sonnet-4-20250514).
 
 ### Supported Document Types
-| Format | Extension | Method |
-|---|---|---|
-| PDF | `.pdf` | PyMuPDF — page-by-page text extraction |
-| Word | `.docx` | python-docx — paragraphs, tables, headers |
-| Text | `.txt` | Built-in — with automatic encoding detection |
-| Images | `.jpg` `.png` `.tiff` `.webp` `.bmp` | Tesseract OCR with preprocessing |
+
+| Format | Extension                            | Method                                       |
+| ------ | ------------------------------------ | -------------------------------------------- |
+| PDF    | `.pdf`                               | PyMuPDF — page-by-page text extraction       |
+| Word   | `.docx`                              | python-docx — paragraphs, tables, headers    |
+| Text   | `.txt`                               | Built-in — with automatic encoding detection |
+| Images | `.jpg` `.png` `.tiff` `.webp` `.bmp` | Tesseract OCR with preprocessing             |
 
 ### AI Capabilities
 
@@ -93,6 +94,7 @@ POST /api/v1/documents/compare
 > Try it yourself in 60 seconds — no sign-up required.
 
 **Swagger UI (interactive API docs):**
+
 ```
 http://localhost:8000/docs
 ```
@@ -100,6 +102,7 @@ http://localhost:8000/docs
 ### Demo Walkthrough
 
 **1. Upload a document**
+
 ```bash
 curl -X POST http://localhost:8000/api/v1/documents/upload \
   -F "file=@your_document.pdf"
@@ -114,6 +117,7 @@ curl -X POST http://localhost:8000/api/v1/documents/upload \
 ```
 
 **2. Ask a question**
+
 ```bash
 curl -X POST http://localhost:8000/api/v1/documents/550e8400.../ask \
   -H "Content-Type: application/json" \
@@ -128,6 +132,7 @@ curl -X POST http://localhost:8000/api/v1/documents/550e8400.../ask \
 ```
 
 **3. Get a summary**
+
 ```bash
 curl -X POST http://localhost:8000/api/v1/documents/550e8400.../summarize \
   -H "Content-Type: application/json" \
@@ -179,51 +184,55 @@ curl -X POST http://localhost:8000/api/v1/documents/550e8400.../summarize \
 
 ### Design Patterns Used
 
-| Pattern | Where | Why |
-|---|---|---|
-| **Strategy** | `ParserService` | Swappable parsers per file type — add new formats without changing callers |
-| **Facade** | `DocumentService` | Single interface to complex subsystem (parsers + Claude + storage) |
-| **Template Method** | `BaseParser` | Common parse workflow (validate → extract → clean) with customizable extraction |
-| **Singleton** | All services | One shared instance per service — avoids reconnecting on every request |
-| **12-Factor Config** | `config.py` | All config from environment variables — works identically in dev, Docker, cloud |
+| Pattern              | Where             | Why                                                                             |
+| -------------------- | ----------------- | ------------------------------------------------------------------------------- |
+| **Strategy**         | `ParserService`   | Swappable parsers per file type — add new formats without changing callers      |
+| **Facade**           | `DocumentService` | Single interface to complex subsystem (parsers + Claude + storage)              |
+| **Template Method**  | `BaseParser`      | Common parse workflow (validate → extract → clean) with customizable extraction |
+| **Singleton**        | All services      | One shared instance per service — avoids reconnecting on every request          |
+| **12-Factor Config** | `config.py`       | All config from environment variables — works identically in dev, Docker, cloud |
 
 ---
 
 ## 🛠️ Tech Stack
 
 ### Core
-| Technology | Version | Purpose |
-|---|---|---|
-| **Python** | 3.11 | Language |
-| **FastAPI** | 0.111 | Async web framework — automatic OpenAPI docs, Pydantic validation |
-| **Uvicorn** | 0.29 | ASGI server |
-| **Pydantic v2** | 2.7 | Request/response validation and settings management |
+
+| Technology      | Version | Purpose                                                           |
+| --------------- | ------- | ----------------------------------------------------------------- |
+| **Python**      | 3.11    | Language                                                          |
+| **FastAPI**     | 0.111   | Async web framework — automatic OpenAPI docs, Pydantic validation |
+| **Uvicorn**     | 0.29    | ASGI server                                                       |
+| **Pydantic v2** | 2.7     | Request/response validation and settings management               |
 
 ### AI & Document Processing
-| Technology | Version | Purpose |
-|---|---|---|
-| **Anthropic Claude** | claude-sonnet-4-20250514 | Q&A, summarization, comparison |
-| **PyMuPDF (fitz)** | 1.24 | PDF text extraction — industry standard |
-| **python-docx** | 1.1 | Word document parsing including tables |
-| **Tesseract OCR** | 5.x | Image-to-text extraction |
-| **Pillow** | 10.3 | Image preprocessing before OCR |
+
+| Technology           | Version                  | Purpose                                 |
+| -------------------- | ------------------------ | --------------------------------------- |
+| **Anthropic Claude** | claude-sonnet-4-20250514 | Q&A, summarization, comparison          |
+| **PyMuPDF (fitz)**   | 1.24                     | PDF text extraction — industry standard |
+| **python-docx**      | 1.1                      | Word document parsing including tables  |
+| **Tesseract OCR**    | 5.x                      | Image-to-text extraction                |
+| **Pillow**           | 10.3                     | Image preprocessing before OCR          |
 
 ### Infrastructure
-| Technology | Version | Purpose |
-|---|---|---|
-| **Redis** | 7 | Response caching — avoids duplicate AI calls |
-| **Docker** | 24+ | Containerization |
-| **Docker Compose** | v2 | Multi-service orchestration |
-| **GitHub Actions** | — | CI/CD pipeline |
+
+| Technology         | Version | Purpose                                      |
+| ------------------ | ------- | -------------------------------------------- |
+| **Redis**          | 7       | Response caching — avoids duplicate AI calls |
+| **Docker**         | 24+     | Containerization                             |
+| **Docker Compose** | v2      | Multi-service orchestration                  |
+| **GitHub Actions** | —       | CI/CD pipeline                               |
 
 ### Code Quality
-| Tool | Purpose |
-|---|---|
-| **Ruff** | Linting + import sorting (replaces flake8 + isort) |
-| **Black** | Code formatting |
-| **MyPy** | Static type checking |
-| **Pytest** | Testing framework — 105 tests |
-| **pytest-cov** | Coverage reports |
+
+| Tool           | Purpose                                            |
+| -------------- | -------------------------------------------------- |
+| **Ruff**       | Linting + import sorting (replaces flake8 + isort) |
+| **Black**      | Code formatting                                    |
+| **MyPy**       | Static type checking                               |
+| **Pytest**     | Testing framework — 105 tests                      |
+| **pytest-cov** | Coverage reports                                   |
 
 ---
 
@@ -289,6 +298,7 @@ open http://localhost:8000/docs
 ## 📚 API Reference
 
 ### Base URL
+
 ```
 http://localhost:8000/api/v1
 ```
@@ -297,33 +307,34 @@ http://localhost:8000/api/v1
 
 #### Document Management
 
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/documents/upload` | Upload a document for analysis |
-| `GET` | `/documents/` | List all uploaded documents |
-| `GET` | `/documents/{id}` | Get document details |
-| `GET` | `/documents/{id}/download` | Download original file |
-| `DELETE` | `/documents/{id}` | Delete a document |
+| Method   | Endpoint                   | Description                    |
+| -------- | -------------------------- | ------------------------------ |
+| `POST`   | `/documents/upload`        | Upload a document for analysis |
+| `GET`    | `/documents/`              | List all uploaded documents    |
+| `GET`    | `/documents/{id}`          | Get document details           |
+| `GET`    | `/documents/{id}/download` | Download original file         |
+| `DELETE` | `/documents/{id}`          | Delete a document              |
 
 #### AI Analysis
 
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/documents/{id}/ask` | Ask a question about a document |
-| `POST` | `/documents/{id}/summarize` | Generate structured summary |
-| `POST` | `/documents/compare` | Compare 2-3 documents |
+| Method | Endpoint                    | Description                     |
+| ------ | --------------------------- | ------------------------------- |
+| `POST` | `/documents/{id}/ask`       | Ask a question about a document |
+| `POST` | `/documents/{id}/summarize` | Generate structured summary     |
+| `POST` | `/documents/compare`        | Compare 2-3 documents           |
 
 #### System
 
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/health` | Health check |
-| `GET` | `/docs` | Interactive Swagger UI |
-| `GET` | `/redoc` | ReDoc API documentation |
+| Method | Endpoint  | Description             |
+| ------ | --------- | ----------------------- |
+| `GET`  | `/health` | Health check            |
+| `GET`  | `/docs`   | Interactive Swagger UI  |
+| `GET`  | `/redoc`  | ReDoc API documentation |
 
 ### Request / Response Examples
 
 #### Upload
+
 ```http
 POST /api/v1/documents/upload
 Content-Type: multipart/form-data
@@ -346,6 +357,7 @@ Response 201:
 ```
 
 #### Ask
+
 ```http
 POST /api/v1/documents/550e8400.../ask
 Content-Type: application/json
@@ -368,6 +380,7 @@ Response 200:
 ```
 
 #### Compare
+
 ```http
 POST /api/v1/documents/compare
 Content-Type: application/json
@@ -401,13 +414,13 @@ All errors follow a consistent format:
 }
 ```
 
-| Status Code | When |
-|---|---|
-| `400` | Invalid file type or malformed request |
-| `404` | Document ID not found |
-| `413` | File exceeds 20MB size limit |
-| `422` | Request body validation failed |
-| `500` | AI analysis or parsing error |
+| Status Code | When                                   |
+| ----------- | -------------------------------------- |
+| `400`       | Invalid file type or malformed request |
+| `404`       | Document ID not found                  |
+| `413`       | File exceeds 20MB size limit           |
+| `422`       | Request body validation failed         |
+| `500`       | AI analysis or parsing error           |
 
 ---
 
@@ -465,21 +478,27 @@ documind-ai/
 ## 🧠 Design Decisions
 
 ### Why FastAPI over Flask or Django?
+
 FastAPI gives automatic OpenAPI/Swagger documentation, native async support, and Pydantic validation with zero boilerplate. For an API-first project, it outperforms Flask (no auto-docs, no validation) and Django (too opinionated, heavyweight for a pure API).
 
 ### Why PyMuPDF over PyPDF2 or pdfminer?
+
 PyMuPDF uses the same rendering engine as Adobe Acrobat. It correctly handles multi-column layouts, rotated text, embedded fonts, and password-protected PDFs — all of which PyPDF2 struggles with. It's also significantly faster (5-10x) on large documents.
 
 ### Why Strategy Pattern for parsers?
+
 Adding support for a new file format (e.g., `.xlsx`, `.pptx`) requires creating one new class and registering it in `ParserService`. Zero changes to existing code — this is the Open/Closed Principle. Without this pattern, every new format would require modifying the central parsing logic.
 
 ### Why exponential backoff for Claude API calls?
+
 Claude's API occasionally returns transient errors under load. A naive implementation that fails immediately creates poor UX. Exponential backoff with jitter (1s → 2s → 4s delay between retries, capped at 30s) handles these gracefully while not hammering a struggling API.
 
 ### Why structured JSON output from Claude?
+
 Asking Claude to return JSON rather than free-form text gives us typed Python objects we can validate, transform, and display differently in UIs. If JSON parsing fails, we fall back to raw text — the API never crashes.
 
 ### Why in-memory storage instead of a database?
+
 Deliberately chosen for demo simplicity. The `_document_store` dict in `document_service.py` can be swapped for any database (PostgreSQL, DynamoDB, MongoDB) without changing the API routes or service interface. The Facade pattern makes this migration trivial.
 
 ---
@@ -589,12 +608,13 @@ docker compose up -d
 **Chinmay Raichur**
 Full Stack Software Engineer · 4.5+ years experience
 
-- 🌐 Portfolio: [chinmayraichur.me](https://chinmayraichur.me)
+- 🌐 Portfolio: [chinmayraichur.me](https://chinmay-portfolio-seven.vercel.app/)
 - 💼 LinkedIn: [linkedin.com/in/chinmay-raichur](https://linkedin.com/in/chinmay-raichur)
 - 🐙 GitHub: [github.com/ChinmayR07](https://github.com/ChinmayR07)
 - 📧 Email: chinmayraichur@gmail.com
 
 ### Related Projects
+
 - [chinmay-portfolio](https://github.com/ChinmayR07/chinmay-portfolio) — Personal portfolio built with Next.js 14, React, TypeScript, and Claude API
 
 ---
@@ -605,4 +625,4 @@ MIT — feel free to use this as a template or learning resource.
 
 ---
 
-*Built with FastAPI, Claude AI, and a lot of coffee ☕*
+_Built with FastAPI, Claude AI, and a lot of coffee ☕_
