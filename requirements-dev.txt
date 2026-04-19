@@ -1,0 +1,18 @@
+# Install production deps first:
+# pip install -r requirements.txt
+# Then install these:
+# pip install -r requirements-dev.txt
+
+# ─── Testing ──────────────────────────────────────────────────────────────────
+pytest==8.2.0              # Test runner
+pytest-asyncio==0.23.6     # Async test support
+pytest-cov==5.0.0          # Code coverage reports
+httpx==0.27.0              # Test HTTP client for FastAPI
+
+# ─── Code Quality ─────────────────────────────────────────────────────────────
+ruff==0.4.4                # Extremely fast Python linter (replaces flake8 + isort)
+black==24.4.2              # Code formatter
+mypy==1.10.0               # Static type checker
+
+# ─── Dev Utilities ────────────────────────────────────────────────────────────
+python-dotenv==1.0.1       # Load .env files locally

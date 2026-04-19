@@ -1,0 +1,63 @@
+# ─── .dockerignore ────────────────────────────────────────────────────────────
+# Files/folders to EXCLUDE from the Docker build context.
+# This speeds up builds and prevents secrets from leaking into images.
+#
+# Rule of thumb: if it's in .gitignore, it should be here too.
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+
+# Virtual environments — NEVER include in Docker image
+venv/
+env/
+.venv/
+ENV/
+
+# Environment files — secrets must NEVER go into Docker images
+.env
+.env.local
+.env.*
+!.env.example
+
+# Tests (not needed in production image)
+tests/
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+
+# Git
+.git/
+.gitignore
+
+# Docker files (don't need Docker inside Docker)
+docker-compose*.yml
+Dockerfile*
+
+# Documentation
+README.md
+docs/
+
+# Uploaded files (these should come from volumes, not image)
+uploads/*
+!uploads/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

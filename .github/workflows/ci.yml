@@ -1,0 +1,130 @@
+# ─── DocuMind AI — GitHub Actions CI/CD ──────────────────────────────────────
+#
+# Runs on every push and pull request to main.
+# Pipeline:
+#   1. Lint (Ruff)
+#   2. Type check (MyPy)
+#   3. Tests (Pytest)
+#   4. Docker build verification
+#
+# Why this order?
+# Linting is fastest (seconds) — catches style issues immediately.
+# Type checking catches logic bugs before tests run.
+# Tests validate actual behavior.
+# Docker build confirms the container works end-to-end.
+
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ─── Lint + Type Check ──────────────────────────────────────────────────────
+  quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dev dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+
+      - name: Run Ruff linter
+        run: ruff check app/ tests/
+
+      - name: Run Ruff formatter check
+        run: ruff format --check app/ tests/
+
+      - name: Run MyPy type checker
+        run: mypy app/ --ignore-missing-imports
+
+
+  # ─── Tests ──────────────────────────────────────────────────────────────────
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    needs: quality  # Only run tests if quality checks pass
+
+    # Start Redis for tests that need it
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tesseract-ocr libmagic1
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+
+      - name: Run tests with coverage
+        run: pytest tests/ -v --cov=app --cov-report=xml
+        env:
+          # Use a dummy key for tests — real API calls are mocked
+          ANTHROPIC_API_KEY: sk-ant-test-key-for-ci-only
+          REDIS_URL: redis://localhost:6379
+          APP_ENV: test
+          CACHE_ENABLED: "false"
+
+      - name: Upload coverage report
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage.xml
+          fail_ci_if_error: false  # Don't fail CI if Codecov is down
+
+
+  # ─── Docker Build ───────────────────────────────────────────────────────────
+  docker:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    needs: test  # Only build Docker if tests pass
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false  # Just verify it builds — don't push to registry
+          tags: documind-ai:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          # GitHub Actions cache means subsequent builds are much faster

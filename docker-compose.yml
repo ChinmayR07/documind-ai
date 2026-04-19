@@ -1,0 +1,144 @@
+# ─── DocuMind AI — Docker Compose ─────────────────────────────────────────────
+#
+# Starts the complete DocuMind AI stack:
+#   - documind-api: FastAPI application (port 8000)
+#   - redis:        Caching layer (port 6379)
+#
+# Usage:
+#   Start:   docker compose up
+#   Start (rebuild):  docker compose up --build
+#   Stop:    docker compose down
+#   Logs:    docker compose logs -f api
+#   Shell:   docker compose exec api bash
+#
+# Swagger UI: http://localhost:8000/docs
+# ReDoc:      http://localhost:8000/redoc
+# Health:     http://localhost:8000/api/v1/health
+
+version: "3.9"
+
+services:
+
+  # ─── FastAPI Application ──────────────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # Use 'runtime' stage for production-like behaviour locally
+      target: runtime
+
+    container_name: documind-api
+
+    ports:
+      - "8000:8000"
+
+    environment:
+      # App settings
+      - APP_ENV=development
+      - DEBUG=true
+
+      # Claude AI — loaded from .env file (never hardcode secrets here)
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+
+      # Redis — use the service name 'redis' as hostname
+      # Docker's internal DNS resolves 'redis' to the Redis container IP
+      - REDIS_URL=redis://redis:6379
+      - CACHE_ENABLED=true
+      - CACHE_TTL_SECONDS=3600
+
+      # File upload settings
+      - MAX_FILE_SIZE_MB=20
+      - UPLOAD_DIR=/app/uploads
+
+      # Claude model settings
+      - CLAUDE_MODEL=${CLAUDE_MODEL:-claude-sonnet-4-20250514}
+      - CLAUDE_MAX_TOKENS=${CLAUDE_MAX_TOKENS:-4096}
+
+    volumes:
+      # Mount uploads directory so files persist between container restarts
+      # Without this, uploads would be lost every time you restart
+      - uploads_data:/app/uploads
+
+      # Mount app code for hot reload in development
+      # Changes to your code reflect immediately without rebuilding
+      - ./app:/app/app
+
+    depends_on:
+      redis:
+        # Wait for Redis to be healthy before starting the API
+        condition: service_healthy
+
+    restart: unless-stopped
+    # unless-stopped = restart automatically after crashes,
+    # but NOT when you manually docker compose down
+
+    networks:
+      - documind-network
+
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import httpx; httpx.get('http://localhost:8000/api/v1/health').raise_for_status()"]
+      interval: 30s
+      timeout: 10s
+      start_period: 15s
+      retries: 3
+
+
+  # ─── Redis Cache ──────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    # alpine = minimal Linux base (~7MB vs ~150MB for full Redis image)
+
+    container_name: documind-redis
+
+    ports:
+      # Expose Redis port to localhost for debugging
+      # (e.g. use RedisInsight at localhost:6379 to inspect cache)
+      - "6379:6379"
+
+    command: >
+      redis-server
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+      --save ""
+      --appendonly no
+    # --maxmemory 256mb: cap Redis memory usage (prevents OOM on small servers)
+    # --maxmemory-policy allkeys-lru: when full, evict least recently used keys
+    # --save "": disable RDB snapshots (we don't need persistence for cache)
+    # --appendonly no: disable AOF logging (not needed for cache)
+
+    volumes:
+      # Optional: persist Redis data between restarts
+      # Remove this if you want a clean cache on every restart
+      - redis_data:/data
+
+    networks:
+      - documind-network
+
+    restart: unless-stopped
+
+    healthcheck:
+      # redis-cli ping returns "PONG" when Redis is ready
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      start_period: 5s
+      retries: 5
+
+
+# ─── Volumes ──────────────────────────────────────────────────────────────────
+# Named volumes persist data between container restarts
+# Unlike bind mounts, Docker manages the storage location
+volumes:
+  uploads_data:
+    driver: local
+  redis_data:
+    driver: local
+
+
+# ─── Networks ─────────────────────────────────────────────────────────────────
+# Custom network isolates these containers from other Docker projects
+# Containers on the same network can reach each other by service name
+networks:
+  documind-network:
+    driver: bridge
