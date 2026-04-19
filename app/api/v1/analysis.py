@@ -89,18 +89,18 @@ async def ask_question(
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=error_msg,
-            )
+            ) from e
         # Empty document
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=error_msg,
-        )
+        ) from e
     except RuntimeError as e:
         logger.error(f"Q&A failed for doc {document_id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"{Messages.AI_ERROR}: {e}",
-        )
+        ) from e
 
 
 # ─── Summarize ────────────────────────────────────────────────────────────────
@@ -149,17 +149,17 @@ async def summarize_document(
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=error_msg,
-            )
+            ) from e
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=error_msg,
-        )
+        ) from e
     except RuntimeError as e:
         logger.error(f"Summarize failed for doc {document_id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"{Messages.AI_ERROR}: {e}",
-        )
+        ) from e
 
 
 # ─── Compare ──────────────────────────────────────────────────────────────────
@@ -229,14 +229,14 @@ async def compare_documents(
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=error_msg,
-            )
+            ) from e
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=error_msg,
-        )
+        ) from e
     except RuntimeError as e:
         logger.error(f"Compare failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"{Messages.AI_ERROR}: {e}",
-        )
+        ) from e

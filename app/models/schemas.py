@@ -16,12 +16,10 @@ for the API contract."
 """
 
 from datetime import datetime
-from typing import Any
 
 from pydantic import BaseModel, Field, field_validator
 
 from app.constants import AnalysisType, DocumentStatus, DocumentType
-
 
 # ─── Document Models ──────────────────────────────────────────────────────────
 

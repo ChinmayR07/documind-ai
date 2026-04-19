@@ -7,6 +7,7 @@ All middleware, exception handlers, and routers are registered here.
 
 import time
 import uuid
+from collections.abc import AsyncIterator, Awaitable, Callable
 from contextlib import asynccontextmanager
 
 import redis.asyncio as aioredis
@@ -15,12 +16,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.config import settings
-from app.constants import Messages
 
 
 # ─── Lifespan (startup + shutdown) ───────────────────────────────────────────
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     """
     Runs on startup and shutdown.
     - Startup: verify connections, create directories
@@ -83,7 +83,10 @@ app.add_middleware(
 
 # ─── Request ID Middleware ────────────────────────────────────────────────────
 @app.middleware("http")
-async def add_request_id(request: Request, call_next) -> Response:
+async def add_request_id(
+    request: Request,
+    call_next: Callable[[Request], Awaitable[Response]],
+) -> Response:
     """
     Adds a unique ID to every request for tracing/debugging.
     Also logs request timing.

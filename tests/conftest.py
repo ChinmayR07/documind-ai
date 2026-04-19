@@ -16,11 +16,10 @@ fixtures reset between each test (clean state), session-scoped
 fixtures are created once and shared (expensive setup like clients)."
 """
 
-import io
 import os
 import tempfile
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 from fastapi.testclient import TestClient

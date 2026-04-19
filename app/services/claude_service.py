@@ -17,11 +17,10 @@ calls. In production AI systems, transient errors are common — a naive
 implementation that fails immediately would cause poor user experience."
 """
 
-import asyncio
 import json
 import logging
 import time
-from typing import Any
+from typing import Any, cast
 
 import anthropic
 from anthropic import APIConnectionError, APIStatusError, RateLimitError
@@ -30,11 +29,10 @@ from app.config import settings
 from app.constants import Limits, Prompts
 from app.models.schemas import (
     AskResponse,
-    CompareRequest,
     DocumentComparison,
     SummarizeResponse,
 )
-from app.utils.text_utils import chunk_text, count_tokens_approx, truncate_text
+from app.utils.text_utils import count_tokens_approx, truncate_text
 
 logger = logging.getLogger(__name__)
 
@@ -96,7 +94,7 @@ class ClaudeService:
                     messages=[{"role": "user", "content": user_message}],
                 )
 
-                text = response.content[0].text
+                text = cast(Any, response.content[0]).text
                 tokens_used = len(user_message) // 4  # Approximate
 
                 if attempt > 0:
@@ -306,7 +304,7 @@ Return ONLY the JSON, no other text."""
             )
         else:
             # Graceful degradation — parsing failed but we still have the text
-            logger.warning(f"JSON parsing failed for summarize. Using raw response.")
+            logger.warning("JSON parsing failed for summarize. Using raw response.")
             return SummarizeResponse(
                 document_id=document_id,
                 executive_summary=raw_response,

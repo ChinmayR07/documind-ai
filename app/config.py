@@ -163,7 +163,7 @@ def get_settings() -> Settings:
         def my_route(settings: Settings = Depends(get_settings)):
             ...
     """
-    return Settings()
+    return Settings()  # type: ignore[call-arg]
 
 
 # ─── Module-level settings instance ──────────────────────────────────────────

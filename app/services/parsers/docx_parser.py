@@ -13,9 +13,9 @@ structured data that lives in tables like financial reports or resumes."
 """
 
 from pathlib import Path
+from typing import Any
 
 from docx import Document
-from docx.oxml.ns import qn
 from docx.table import Table
 from docx.text.paragraph import Paragraph
 
@@ -125,7 +125,7 @@ class DocxParser(BaseParser):
                 rows.append("-" * len(row_text))
         return "\n".join(rows)
 
-    def _extract_header_footer(self, header_footer) -> str:
+    def _extract_header_footer(self, header_footer: Any) -> str:
         """Extract text from a document header or footer."""
         try:
             texts = [para.text.strip() for para in header_footer.paragraphs]

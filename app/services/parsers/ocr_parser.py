@@ -22,8 +22,8 @@ on low-contrast or noisy images like scanned documents."
 
 from pathlib import Path
 
-from PIL import Image, ImageEnhance, ImageFilter
 import pytesseract
+from PIL import Image, ImageEnhance
 
 from app.services.parsers.base_parser import BaseParser, ParseResult
 
@@ -107,12 +107,12 @@ class ImageParser(BaseParser):
                 warnings=warnings,
             )
 
-        except pytesseract.TesseractNotFoundError:
+        except pytesseract.TesseractNotFoundError as err:
             raise RuntimeError(
                 "Tesseract is not installed or not in PATH. "
                 "Install it with: brew install tesseract (Mac) "
                 "or sudo apt-get install tesseract-ocr (Linux)"
-            )
+            ) from err
         except Exception as e:
             raise RuntimeError(f"OCR processing failed: {e}") from e
 
@@ -147,6 +147,6 @@ class ImageParser(BaseParser):
         if width < 1000 or height < 1000:
             scale_factor = max(1000 / width, 1000 / height)
             new_size = (int(width * scale_factor), int(height * scale_factor))
-            sharpened = sharpened.resize(new_size, Image.LANCZOS)
+            sharpened = sharpened.resize(new_size, Image.Resampling.LANCZOS)
 
         return sharpened

@@ -17,6 +17,8 @@ makes unit testing much easier since you can inject mock services."
 """
 
 import logging
+from datetime import datetime
+from typing import cast
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from fastapi.responses import FileResponse
@@ -120,14 +122,14 @@ async def upload_document(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e),
-        )
+        ) from e
     except RuntimeError as e:
         # Processing errors (parse failed, etc.)
         logger.error(f"Upload failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=str(e),
-        )
+        ) from e
 
 
 # ─── List Documents ───────────────────────────────────────────────────────────
@@ -151,7 +153,7 @@ async def list_documents() -> DocumentListResponse:
             document_type=doc["document_type"],
             file_size_mb=doc["file_size_mb"],
             status=doc["status"],
-            created_at=doc.get("created_at"),
+            created_at=cast(datetime, doc.get("created_at") or datetime.utcnow()),
             page_count=doc.get("page_count", 0),
             word_count=doc.get("word_count", 0),
             char_count=doc.get("char_count", 0),
@@ -187,17 +189,17 @@ async def get_document(document_id: str) -> DocumentRecord:
             document_type=doc["document_type"],
             file_size_mb=doc["file_size_mb"],
             status=doc["status"],
-            created_at=doc.get("created_at"),
+            created_at=cast(datetime, doc.get("created_at") or datetime.utcnow()),
             page_count=doc.get("page_count", 0),
             word_count=doc.get("word_count", 0),
             char_count=doc.get("char_count", 0),
             warnings=doc.get("warnings", []),
         )
-    except ValueError:
+    except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Document '{document_id}' not found.",
-        )
+        ) from e
 
 
 # ─── Download Document ────────────────────────────────────────────────────────
@@ -211,7 +213,7 @@ async def get_document(document_id: str) -> DocumentRecord:
         404: {"description": "Document not found"},
     },
 )
-async def download_document(document_id: str):
+async def download_document(document_id: str) -> FileResponse:
     """Download the original uploaded document."""
     try:
         doc = document_service.get_document(document_id)
@@ -229,11 +231,11 @@ async def download_document(document_id: str):
             filename=doc["original_filename"],
             media_type="application/octet-stream",
         )
-    except ValueError:
+    except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Document '{document_id}' not found.",
-        )
+        ) from e
 
 
 # ─── Delete Document ──────────────────────────────────────────────────────────
@@ -257,8 +259,8 @@ async def delete_document(document_id: str) -> DeleteResponse:
             message=Messages.DOCUMENT_DELETED,
             deleted=True,
         )
-    except ValueError:
+    except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Document '{document_id}' not found.",
-        )
+        ) from e

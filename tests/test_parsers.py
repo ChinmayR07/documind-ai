@@ -14,10 +14,9 @@ from pathlib import Path
 
 import pytest
 
+from app.services.parser_service import ParserService
 from app.services.parsers.base_parser import ParseResult
 from app.services.parsers.txt_parser import TextParser
-from app.services.parser_service import ParserService
-
 
 # ─── ParseResult Tests ────────────────────────────────────────────────────────
 

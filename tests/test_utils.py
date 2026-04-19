@@ -5,12 +5,9 @@ Unit tests for utility functions and configuration.
 These are the fastest tests — pure Python, no I/O, no HTTP.
 """
 
-import tempfile
 from pathlib import Path
-from unittest.mock import patch
 
 import pytest
-
 
 # ─── Text Utility Tests ───────────────────────────────────────────────────────
 

@@ -24,7 +24,6 @@ from app.constants import DocumentStatus, Messages
 from app.models.schemas import (
     AskResponse,
     DocumentComparison,
-    DocumentRecord,
     DocumentUploadResponse,
     SummarizeResponse,
 )

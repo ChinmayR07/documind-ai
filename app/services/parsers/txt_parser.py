@@ -55,10 +55,6 @@ class TextParser(BaseParser):
         if encoding_used != "utf-8":
             warnings.append(f"File decoded using {encoding_used} encoding.")
 
-        # Split into "pages" by double newlines for consistency
-        # (text files don't have real pages)
-        paragraphs = [p.strip() for p in text.split("\n\n") if p.strip()]
-
         return ParseResult(
             text=text,
             page_count=1,

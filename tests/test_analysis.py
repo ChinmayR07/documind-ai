@@ -27,8 +27,6 @@ import io
 import json
 from unittest.mock import patch
 
-import pytest
-
 
 def upload_test_document(test_client, content: bytes, filename: str = "test.txt") -> str:
     """Helper: upload a document and return its ID."""
