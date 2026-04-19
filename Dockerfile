@@ -92,9 +92,9 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
 # Start the application
 # - Use uvicorn directly (not python -m app.main) for Docker
 # - --host 0.0.0.0: accept connections from outside the container
-# - --workers 2: 2 worker processes (adjust based on CPU cores)
+# - --workers 1: 1 worker process (adjust based on CPU cores)
 # - --no-access-log: reduce log noise (logs go to app logger instead)
 CMD ["uvicorn", "app.main:app", \
      "--host", "0.0.0.0", \
      "--port", "8000", \
-     "--workers", "2"]
+     "--workers", "1"]
