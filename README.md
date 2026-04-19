@@ -6,6 +6,7 @@
 [![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.111-green?logo=fastapi)](https://fastapi.tiangolo.com)
 [![Claude AI](https://img.shields.io/badge/Claude-claude--sonnet--4--20250514-orange?logo=anthropic)](https://anthropic.com)
+[![Live API](https://img.shields.io/badge/API-Live-brightgreen)](https://documind-ai-mbnr.onrender.com)
 [![Docker](https://img.shields.io/badge/Docker-ready-blue?logo=docker)](https://docker.com)
 [![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
 
@@ -91,7 +92,7 @@ POST /api/v1/documents/compare
 
 ## 🎬 Live Demo
 
-> Try it yourself in 60 seconds — no sign-up required.
+**🌐 Live API:** https://documind-ai-mbnr.onrender.com
 
 **Swagger UI (interactive API docs):**
 
