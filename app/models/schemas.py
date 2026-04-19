@@ -23,8 +23,10 @@ from app.constants import AnalysisType, DocumentStatus, DocumentType
 
 # ─── Document Models ──────────────────────────────────────────────────────────
 
+
 class DocumentBase(BaseModel):
     """Shared fields across document models."""
+
     original_filename: str
     document_type: DocumentType
     file_size_mb: float
@@ -32,6 +34,7 @@ class DocumentBase(BaseModel):
 
 class DocumentCreate(DocumentBase):
     """Internal model used when creating a document record."""
+
     id: str
     stored_filename: str
     file_path: str
@@ -44,6 +47,7 @@ class DocumentRecord(DocumentBase):
     Full document record returned by the API.
     This is what clients see when they list or get a document.
     """
+
     id: str
     status: DocumentStatus
     created_at: datetime = Field(default_factory=datetime.utcnow)
@@ -59,12 +63,14 @@ class DocumentRecord(DocumentBase):
 
 class DocumentListResponse(BaseModel):
     """Response for listing all documents."""
+
     documents: list[DocumentRecord]
     total: int
 
 
 class DocumentUploadResponse(BaseModel):
     """Response immediately after a successful upload."""
+
     id: str
     filename: str
     document_type: DocumentType
@@ -79,6 +85,7 @@ class DocumentUploadResponse(BaseModel):
 
 class DeleteResponse(BaseModel):
     """Response for document deletion."""
+
     id: str
     message: str
     deleted: bool
@@ -86,11 +93,13 @@ class DeleteResponse(BaseModel):
 
 # ─── Analysis Request Models ──────────────────────────────────────────────────
 
+
 class AskRequest(BaseModel):
     """
     Request body for asking a question about a document.
     The document_id comes from the URL path, not the body.
     """
+
     question: str = Field(
         ...,
         min_length=3,
@@ -114,6 +123,7 @@ class AskRequest(BaseModel):
 
 class SummarizeRequest(BaseModel):
     """Request body for document summarization."""
+
     max_length: str = Field(
         default="medium",
         description="Summary length: 'short' (1 para), 'medium' (5-7 points), 'long' (detailed)",
@@ -131,6 +141,7 @@ class CompareRequest(BaseModel):
     Request body for comparing multiple documents.
     Document IDs to compare are passed in the body.
     """
+
     document_ids: list[str] = Field(
         ...,
         min_length=2,
@@ -153,8 +164,10 @@ class CompareRequest(BaseModel):
 
 # ─── Analysis Response Models ─────────────────────────────────────────────────
 
+
 class AskResponse(BaseModel):
     """Response from Q&A analysis."""
+
     document_id: str
     question: str
     answer: str
@@ -169,13 +182,15 @@ class AskResponse(BaseModel):
 
 class KeyInsight(BaseModel):
     """A single key insight extracted from a document."""
+
     insight: str
-    category: str = ""   # e.g. "Financial", "Risk", "Recommendation"
+    category: str = ""  # e.g. "Financial", "Risk", "Recommendation"
     importance: str = "medium"  # "high", "medium", "low"
 
 
 class SummarizeResponse(BaseModel):
     """Response from summarization analysis."""
+
     document_id: str
     executive_summary: str
     key_points: list[str]
@@ -190,12 +205,13 @@ class SummarizeResponse(BaseModel):
 
 class DocumentComparison(BaseModel):
     """Result of comparing multiple documents."""
+
     document_ids: list[str]
     num_documents: int
     overview: str
     common_themes: list[str]
     key_differences: list[str]
-    unique_insights: dict[str, str]   # document_id → unique insight
+    unique_insights: dict[str, str]  # document_id → unique insight
     contradictions: list[str]
     synthesis: str
     cached: bool = False
@@ -204,8 +220,10 @@ class DocumentComparison(BaseModel):
 
 # ─── Error Models ─────────────────────────────────────────────────────────────
 
+
 class ErrorResponse(BaseModel):
     """Standard error response shape."""
+
     error: str
     detail: str = ""
     code: int
@@ -213,6 +231,7 @@ class ErrorResponse(BaseModel):
 
 class HealthResponse(BaseModel):
     """Health check response."""
+
     status: str
     app: str
     version: str

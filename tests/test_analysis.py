@@ -40,6 +40,7 @@ def upload_test_document(test_client, content: bytes, filename: str = "test.txt"
 
 # ─── Q&A Tests ────────────────────────────────────────────────────────────────
 
+
 class TestAskQuestion:
     """Tests for POST /api/v1/documents/{id}/ask."""
 
@@ -160,16 +161,19 @@ class TestAskQuestion:
 
 # ─── Summarization Tests ──────────────────────────────────────────────────────
 
+
 class TestSummarize:
     """Tests for POST /api/v1/documents/{id}/summarize."""
 
-    MOCK_SUMMARY_JSON = json.dumps({
-        "executive_summary": "This is a financial document showing strong Q3 performance.",
-        "key_points": ["Revenue up 15%", "AI investment recommended", "Q3 was best quarter"],
-        "key_entities": ["Q3", "Board", "$1,800,000"],
-        "document_type_detected": "Financial Report",
-        "recommended_action": "Approve AI investment budget",
-    })
+    MOCK_SUMMARY_JSON = json.dumps(
+        {
+            "executive_summary": "This is a financial document showing strong Q3 performance.",
+            "key_points": ["Revenue up 15%", "AI investment recommended", "Q3 was best quarter"],
+            "key_entities": ["Q3", "Board", "$1,800,000"],
+            "document_type_detected": "Financial Report",
+            "recommended_action": "Approve AI investment budget",
+        }
+    )
     MOCK_RESPONSE = (MOCK_SUMMARY_JSON, 800)
 
     def test_summarize_returns_200(self, test_client, sample_txt_bytes):
@@ -252,17 +256,20 @@ class TestSummarize:
 
 # ─── Comparison Tests ─────────────────────────────────────────────────────────
 
+
 class TestCompare:
     """Tests for POST /api/v1/documents/compare."""
 
-    MOCK_COMPARE_JSON = json.dumps({
-        "overview": "Two financial documents covering different time periods.",
-        "common_themes": ["Revenue", "AI investment", "Growth"],
-        "key_differences": ["Different quarters", "Different revenue figures"],
-        "unique_insights": {"doc1": "Q1-Q2 data", "doc2": "Q3 data"},
-        "contradictions": [],
-        "synthesis": "Both show positive trends.",
-    })
+    MOCK_COMPARE_JSON = json.dumps(
+        {
+            "overview": "Two financial documents covering different time periods.",
+            "common_themes": ["Revenue", "AI investment", "Growth"],
+            "key_differences": ["Different quarters", "Different revenue figures"],
+            "unique_insights": {"doc1": "Q1-Q2 data", "doc2": "Q3 data"},
+            "contradictions": [],
+            "synthesis": "Both show positive trends.",
+        }
+    )
     MOCK_RESPONSE = (MOCK_COMPARE_JSON, 1200)
 
     def _upload_two_docs(self, test_client, sample_txt_bytes) -> tuple[str, str]:
@@ -330,10 +337,7 @@ class TestCompare:
 
     def test_compare_four_documents_returns_422(self, test_client, sample_txt_bytes):
         """Comparing four documents should return 422 (max is 3)."""
-        ids = [
-            upload_test_document(test_client, sample_txt_bytes, f"doc{i}.txt")
-            for i in range(4)
-        ]
+        ids = [upload_test_document(test_client, sample_txt_bytes, f"doc{i}.txt") for i in range(4)]
         response = test_client.post(
             "/api/v1/documents/compare",
             json={"document_ids": ids},

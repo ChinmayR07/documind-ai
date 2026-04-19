@@ -16,6 +16,8 @@ Repository = "https://github.com/ChinmayR07/documind-ai"
 [tool.ruff]
 target-version = "py311"
 line-length = 100
+
+[tool.ruff.lint]
 select = [
     "E",   # pycodestyle errors
     "W",   # pycodestyle warnings
@@ -30,7 +32,7 @@ ignore = [
     "B008",  # do not perform function calls in default arguments (FastAPI pattern)
 ]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S101"]  # Allow assert in tests
 
 # ─── Black (Formatter) ────────────────────────────────────────────────────────

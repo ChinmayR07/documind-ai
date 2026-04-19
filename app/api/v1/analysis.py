@@ -41,6 +41,7 @@ router = APIRouter(
 
 # ─── Q&A ──────────────────────────────────────────────────────────────────────
 
+
 @router.post(
     "/{document_id}/ask",
     response_model=AskResponse,
@@ -105,6 +106,7 @@ async def ask_question(
 
 # ─── Summarize ────────────────────────────────────────────────────────────────
 
+
 @router.post(
     "/{document_id}/summarize",
     response_model=SummarizeResponse,
@@ -163,6 +165,7 @@ async def summarize_document(
 
 
 # ─── Compare ──────────────────────────────────────────────────────────────────
+
 
 @router.post(
     "/compare",

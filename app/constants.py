@@ -15,9 +15,10 @@ class DocumentType(str, Enum):
     Supported document types.
     Inherits from str so it serializes cleanly to JSON.
     """
-    PDF   = "pdf"
-    DOCX  = "docx"
-    TXT   = "txt"
+
+    PDF = "pdf"
+    DOCX = "docx"
+    TXT = "txt"
     IMAGE = "image"
 
     @classmethod
@@ -25,17 +26,17 @@ class DocumentType(str, Enum):
         """Map a file extension to a DocumentType."""
         ext = ext.lower().lstrip(".")
         mapping = {
-            "pdf":  cls.PDF,
+            "pdf": cls.PDF,
             "docx": cls.DOCX,
-            "doc":  cls.DOCX,
-            "txt":  cls.TXT,
-            "jpg":  cls.IMAGE,
+            "doc": cls.DOCX,
+            "txt": cls.TXT,
+            "jpg": cls.IMAGE,
             "jpeg": cls.IMAGE,
-            "png":  cls.IMAGE,
+            "png": cls.IMAGE,
             "tiff": cls.IMAGE,
-            "tif":  cls.IMAGE,
+            "tif": cls.IMAGE,
             "webp": cls.IMAGE,
-            "bmp":  cls.IMAGE,
+            "bmp": cls.IMAGE,
         }
         if ext not in mapping:
             raise ValueError(f"Unsupported file extension: .{ext}")
@@ -45,51 +46,52 @@ class DocumentType(str, Enum):
 # ─── Analysis Types ───────────────────────────────────────────────────────────
 class AnalysisType(str, Enum):
     """Types of AI analysis DocuMind can perform."""
-    QA          = "qa"          # Question & Answer
-    SUMMARIZE   = "summarize"   # Document summarization
-    COMPARE     = "compare"     # Multi-document comparison
-    INSIGHTS    = "insights"    # Key insights extraction
+
+    QA = "qa"  # Question & Answer
+    SUMMARIZE = "summarize"  # Document summarization
+    COMPARE = "compare"  # Multi-document comparison
+    INSIGHTS = "insights"  # Key insights extraction
 
 
 # ─── Document Status ──────────────────────────────────────────────────────────
 class DocumentStatus(str, Enum):
     """Lifecycle status of an uploaded document."""
-    PROCESSING = "processing"   # Being parsed / text extracted
-    READY      = "ready"        # Parsed successfully, ready for AI analysis
-    FAILED     = "failed"       # Parsing failed
+
+    PROCESSING = "processing"  # Being parsed / text extracted
+    READY = "ready"  # Parsed successfully, ready for AI analysis
+    FAILED = "failed"  # Parsing failed
 
 
 # ─── Cache Key Prefixes ───────────────────────────────────────────────────────
 # Using prefixes prevents key collisions in Redis
 class CacheKeys:
-    DOCUMENT        = "doc:"        # doc:{document_id} → document metadata
-    DOCUMENT_TEXT   = "doc:text:"   # doc:text:{document_id} → extracted text
-    ANALYSIS        = "analysis:"   # analysis:{doc_id}:{hash} → AI response
+    DOCUMENT = "doc:"  # doc:{document_id} → document metadata
+    DOCUMENT_TEXT = "doc:text:"  # doc:text:{document_id} → extracted text
+    ANALYSIS = "analysis:"  # analysis:{doc_id}:{hash} → AI response
 
 
 # ─── API Response Messages ────────────────────────────────────────────────────
 class Messages:
     # Success
-    DOCUMENT_UPLOADED   = "Document uploaded and processed successfully"
-    DOCUMENT_DELETED    = "Document deleted successfully"
-    ANALYSIS_COMPLETE   = "Analysis completed successfully"
+    DOCUMENT_UPLOADED = "Document uploaded and processed successfully"
+    DOCUMENT_DELETED = "Document deleted successfully"
+    ANALYSIS_COMPLETE = "Analysis completed successfully"
 
     # Errors
-    DOCUMENT_NOT_FOUND  = "Document not found"
-    FILE_TOO_LARGE      = "File size exceeds the maximum allowed limit"
-    UNSUPPORTED_TYPE    = "File type not supported"
-    PARSE_FAILED        = "Failed to extract text from document"
-    AI_ERROR            = "AI analysis failed. Please try again"
-    CACHE_ERROR         = "Cache error — proceeding without cache"
-    COMPARE_MIN_DOCS    = "At least 2 documents are required for comparison"
-    COMPARE_MAX_DOCS    = "Maximum 3 documents can be compared at once"
-    EMPTY_DOCUMENT      = "No text could be extracted from this document"
+    DOCUMENT_NOT_FOUND = "Document not found"
+    FILE_TOO_LARGE = "File size exceeds the maximum allowed limit"
+    UNSUPPORTED_TYPE = "File type not supported"
+    PARSE_FAILED = "Failed to extract text from document"
+    AI_ERROR = "AI analysis failed. Please try again"
+    CACHE_ERROR = "Cache error — proceeding without cache"
+    COMPARE_MIN_DOCS = "At least 2 documents are required for comparison"
+    COMPARE_MAX_DOCS = "Maximum 3 documents can be compared at once"
+    EMPTY_DOCUMENT = "No text could be extracted from this document"
 
 
 # ─── Claude Prompt Templates ──────────────────────────────────────────────────
 # Keeping prompts here makes them easy to iterate and version control
 class Prompts:
-
     QA_SYSTEM = """You are DocuMind AI, an expert document analyst.
 You answer questions based ONLY on the content of the provided document.
 Be precise, cite relevant sections, and indicate page numbers when available.
@@ -138,11 +140,11 @@ Provide a detailed comparison covering:
 # ─── Limits ───────────────────────────────────────────────────────────────────
 class Limits:
     # Text limits — Claude has a context window, so we chunk large documents
-    MAX_TEXT_CHARS_FOR_CLAUDE  = 180_000   # ~45K tokens — safe limit for claude-sonnet-4-20250514
-    MAX_QUESTION_LENGTH        = 1_000     # Characters
-    MAX_DOCUMENTS_TO_COMPARE   = 3
-    MIN_DOCUMENTS_TO_COMPARE   = 2
+    MAX_TEXT_CHARS_FOR_CLAUDE = 180_000  # ~45K tokens — safe limit for claude-sonnet-4-20250514
+    MAX_QUESTION_LENGTH = 1_000  # Characters
+    MAX_DOCUMENTS_TO_COMPARE = 3
+    MIN_DOCUMENTS_TO_COMPARE = 2
 
     # API limits
-    MAX_DOCUMENTS_PER_USER     = 50        # Max stored documents
-    MAX_REQUESTS_PER_MINUTE    = 20        # Rate limiting (future)
+    MAX_DOCUMENTS_PER_USER = 50  # Max stored documents
+    MAX_REQUESTS_PER_MINUTE = 20  # Rate limiting (future)

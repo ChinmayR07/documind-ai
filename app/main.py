@@ -59,8 +59,8 @@ app = FastAPI(
     title=settings.APP_NAME,
     version=settings.APP_VERSION,
     description=settings.APP_DESCRIPTION,
-    docs_url="/docs",           # Swagger UI at /docs
-    redoc_url="/redoc",         # ReDoc UI at /redoc
+    docs_url="/docs",  # Swagger UI at /docs
+    redoc_url="/redoc",  # ReDoc UI at /redoc
     openapi_url="/openapi.json",
     lifespan=lifespan,
 )
@@ -71,7 +71,9 @@ app = FastAPI(
 # In production, replace "*" with your actual frontend domain
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"] if settings.IS_DEVELOPMENT else [
+    allow_origins=["*"]
+    if settings.IS_DEVELOPMENT
+    else [
         "https://chinmayraichur.me",
         "https://chinmayraichur.vercel.app",
     ],

@@ -198,10 +198,7 @@ class DocumentService:
         """
         text = self.get_document_text(document_id)
 
-        logger.info(
-            f"Q&A: doc={document_id[:8]}, "
-            f"q='{question[:50]}...'"
-        )
+        logger.info(f"Q&A: doc={document_id[:8]}, " f"q='{question[:50]}...'")
 
         return claude_service.ask_question(
             document_text=text,
@@ -242,15 +239,16 @@ class DocumentService:
         for doc_id in document_ids:
             text = self.get_document_text(doc_id)
             doc_meta = self.get_document(doc_id)
-            documents.append({
-                "id": doc_id,
-                "text": text,
-                "filename": doc_meta["original_filename"],
-            })
+            documents.append(
+                {
+                    "id": doc_id,
+                    "text": text,
+                    "filename": doc_meta["original_filename"],
+                }
+            )
 
         logger.info(
-            f"Compare: {len(documents)} documents, "
-            f"ids={[d['id'][:8] for d in documents]}"
+            f"Compare: {len(documents)} documents, " f"ids={[d['id'][:8] for d in documents]}"
         )
 
         return claude_service.compare_documents(

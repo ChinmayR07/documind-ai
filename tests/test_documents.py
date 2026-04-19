@@ -18,6 +18,7 @@ from app.constants import DocumentStatus, DocumentType
 
 # ─── Health Check ─────────────────────────────────────────────────────────────
 
+
 class TestHealthCheck:
     """Tests for the health check endpoint."""
 
@@ -48,6 +49,7 @@ class TestHealthCheck:
 
 
 # ─── Document Upload ──────────────────────────────────────────────────────────
+
 
 class TestDocumentUpload:
     """Tests for POST /api/v1/documents/upload."""
@@ -135,6 +137,7 @@ class TestDocumentUpload:
 
 # ─── Document Listing ─────────────────────────────────────────────────────────
 
+
 class TestDocumentListing:
     """Tests for GET /api/v1/documents/."""
 
@@ -173,6 +176,7 @@ class TestDocumentListing:
 
 # ─── Get Single Document ──────────────────────────────────────────────────────
 
+
 class TestGetDocument:
     """Tests for GET /api/v1/documents/{id}."""
 
@@ -198,6 +202,7 @@ class TestGetDocument:
 
 
 # ─── Delete Document ──────────────────────────────────────────────────────────
+
 
 class TestDeleteDocument:
     """Tests for DELETE /api/v1/documents/{id}."""

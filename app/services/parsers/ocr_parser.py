@@ -85,10 +85,7 @@ class ImageParser(BaseParser):
                     output_type=pytesseract.Output.DICT,
                     config=custom_config,
                 )
-                confidences = [
-                    int(c) for c in data["conf"]
-                    if str(c).isdigit() and int(c) >= 0
-                ]
+                confidences = [int(c) for c in data["conf"] if str(c).isdigit() and int(c) >= 0]
                 if confidences:
                     avg_confidence = sum(confidences) / len(confidences)
                     if avg_confidence < 60:

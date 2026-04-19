@@ -72,7 +72,7 @@ def truncate_text(text: str, max_chars: int, suffix: str = "...") -> str:
     """Truncate text to max_chars, breaking at a word boundary."""
     if len(text) <= max_chars:
         return text
-    truncated = text[:max_chars - len(suffix)]
+    truncated = text[: max_chars - len(suffix)]
     last_space = truncated.rfind(" ")
     if last_space > 0:
         truncated = truncated[:last_space]

@@ -20,6 +20,7 @@ from app.services.parsers.txt_parser import TextParser
 
 # ─── ParseResult Tests ────────────────────────────────────────────────────────
 
+
 class TestParseResult:
     """Tests for the ParseResult dataclass."""
 
@@ -55,6 +56,7 @@ class TestParseResult:
 
 
 # ─── Text Parser Tests ────────────────────────────────────────────────────────
+
 
 class TestTextParser:
     """Tests for the plain text file parser."""
@@ -146,9 +148,7 @@ class TestTextParser:
 
     def test_empty_file_returns_warnings(self, parser):
         """Empty file should parse without crashing but have warnings."""
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".txt", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False) as f:
             f.write("")  # Empty file
             tmp_path = Path(f.name)
 
@@ -161,6 +161,7 @@ class TestTextParser:
 
 
 # ─── Parser Service Tests ─────────────────────────────────────────────────────
+
 
 class TestParserService:
     """Tests for the unified ParserService."""
@@ -205,9 +206,7 @@ class TestParserService:
         assert hash1 == hash2
         assert len(hash1) == 64  # SHA-256 is always 64 hex chars
 
-    def test_get_document_hash_differs_for_different_files(
-        self, service, temp_dir
-    ):
+    def test_get_document_hash_differs_for_different_files(self, service, temp_dir):
         """Different content should produce different hashes."""
         file1 = temp_dir / "file1.txt"
         file2 = temp_dir / "file2.txt"

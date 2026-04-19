@@ -39,8 +39,8 @@ logger = logging.getLogger(__name__)
 
 # ─── Retry Configuration ──────────────────────────────────────────────────────
 MAX_RETRIES = 3
-BASE_DELAY_SECONDS = 1.0   # Start with 1 second delay
-MAX_DELAY_SECONDS = 30.0   # Cap at 30 seconds
+BASE_DELAY_SECONDS = 1.0  # Start with 1 second delay
+MAX_DELAY_SECONDS = 30.0  # Cap at 30 seconds
 
 
 class ClaudeService:
@@ -105,7 +105,7 @@ class ClaudeService:
             except RateLimitError as e:
                 # Rate limited — wait longer
                 last_exception = e
-                wait_time = min(BASE_DELAY_SECONDS * (2 ** attempt) * 2, MAX_DELAY_SECONDS)
+                wait_time = min(BASE_DELAY_SECONDS * (2**attempt) * 2, MAX_DELAY_SECONDS)
                 logger.warning(
                     f"Rate limited by Claude API (attempt {attempt + 1}/{MAX_RETRIES}). "
                     f"Waiting {wait_time:.1f}s..."
@@ -115,7 +115,7 @@ class ClaudeService:
             except APIConnectionError as e:
                 # Network error — retry with backoff
                 last_exception = e
-                wait_time = min(BASE_DELAY_SECONDS * (2 ** attempt), MAX_DELAY_SECONDS)
+                wait_time = min(BASE_DELAY_SECONDS * (2**attempt), MAX_DELAY_SECONDS)
                 logger.warning(
                     f"Connection error (attempt {attempt + 1}/{MAX_RETRIES}). "
                     f"Waiting {wait_time:.1f}s..."
@@ -126,12 +126,10 @@ class ClaudeService:
                 # 4xx errors (except 429 rate limit) — don't retry
                 if e.status_code in (400, 401, 403):
                     logger.error(f"Non-retryable Claude API error: {e.status_code}")
-                    raise RuntimeError(
-                        f"Claude API error {e.status_code}: {e.message}"
-                    ) from e
+                    raise RuntimeError(f"Claude API error {e.status_code}: {e.message}") from e
                 # 5xx errors — retry
                 last_exception = e
-                wait_time = min(BASE_DELAY_SECONDS * (2 ** attempt), MAX_DELAY_SECONDS)
+                wait_time = min(BASE_DELAY_SECONDS * (2**attempt), MAX_DELAY_SECONDS)
                 logger.warning(
                     f"Server error {e.status_code} (attempt {attempt + 1}/{MAX_RETRIES}). "
                     f"Waiting {wait_time:.1f}s..."
@@ -140,8 +138,7 @@ class ClaudeService:
 
         # All retries exhausted
         raise RuntimeError(
-            f"Claude API failed after {MAX_RETRIES} attempts. "
-            f"Last error: {last_exception}"
+            f"Claude API failed after {MAX_RETRIES} attempts. " f"Last error: {last_exception}"
         )
 
     # ─── Prepare Document Context ─────────────────────────────────────────────
@@ -276,10 +273,7 @@ Please return your response as valid JSON with this exact structure:
 
 Return ONLY the JSON, no other text."""
 
-        logger.info(
-            f"Summarize request: doc={document_id[:8]}, "
-            f"context_chars={len(context):,}"
-        )
+        logger.info(f"Summarize request: doc={document_id[:8]}, " f"context_chars={len(context):,}")
 
         raw_response, tokens_used = self._call_claude(
             system_prompt=Prompts.SUMMARIZE_SYSTEM,
@@ -383,8 +377,7 @@ Return your response as valid JSON:
 Return ONLY the JSON."""
 
         logger.info(
-            f"Compare request: {num_docs} documents, "
-            f"ids={[d['id'][:8] for d in documents]}"
+            f"Compare request: {num_docs} documents, " f"ids={[d['id'][:8] for d in documents]}"
         )
 
         raw_response, tokens_used = self._call_claude(

@@ -34,6 +34,7 @@ os.environ.setdefault("REDIS_URL", "redis://localhost:6379")
 
 # ─── App Client ───────────────────────────────────────────────────────────────
 
+
 @pytest.fixture(scope="session")
 def test_client():
     """
@@ -49,11 +50,13 @@ def test_client():
     - Works synchronously even with async routes
     """
     from app.main import app
+
     with TestClient(app) as client:
         yield client
 
 
 # ─── Temporary Files ──────────────────────────────────────────────────────────
+
 
 @pytest.fixture
 def temp_dir():
@@ -137,6 +140,7 @@ startxref
 
 # ─── Mock Claude Responses ────────────────────────────────────────────────────
 
+
 @pytest.fixture
 def mock_claude_qa_response():
     """Fake Claude Q&A response — avoids real API calls."""
@@ -152,20 +156,23 @@ def mock_claude_qa_response():
 def mock_claude_summarize_response():
     """Fake Claude summarization response as JSON string."""
     import json
+
     return (
-        json.dumps({
-            "executive_summary": "This document reports strong financial performance with revenue exceeding targets by 15%.",
-            "key_points": [
-                "Q1 revenue: $1,200,000",
-                "Q2 revenue: $1,450,000",
-                "Q3 revenue: $1,800,000",
-                "Total exceeded expectations by 15%",
-                "Board recommends AI investment",
-            ],
-            "key_entities": ["Q1", "Q2", "Q3", "$1,200,000", "$1,800,000"],
-            "document_type_detected": "Financial Report",
-            "recommended_action": "Review AI investment strategy for next fiscal year",
-        }),
+        json.dumps(
+            {
+                "executive_summary": "This document reports strong financial performance with revenue exceeding targets by 15%.",
+                "key_points": [
+                    "Q1 revenue: $1,200,000",
+                    "Q2 revenue: $1,450,000",
+                    "Q3 revenue: $1,800,000",
+                    "Total exceeded expectations by 15%",
+                    "Board recommends AI investment",
+                ],
+                "key_entities": ["Q1", "Q2", "Q3", "$1,200,000", "$1,800,000"],
+                "document_type_detected": "Financial Report",
+                "recommended_action": "Review AI investment strategy for next fiscal year",
+            }
+        ),
         800,
     )
 
@@ -174,21 +181,24 @@ def mock_claude_summarize_response():
 def mock_claude_compare_response():
     """Fake Claude comparison response as JSON string."""
     import json
+
     return (
-        json.dumps({
-            "overview": "Document 1 is a financial report. Document 2 is a strategic plan.",
-            "common_themes": ["Revenue growth", "AI investment", "Q3 performance"],
-            "key_differences": [
-                "Document 1 focuses on historical data",
-                "Document 2 focuses on future strategy",
-            ],
-            "unique_insights": {
-                "doc1": "Specific revenue figures by quarter",
-                "doc2": "Strategic recommendations for next year",
-            },
-            "contradictions": [],
-            "synthesis": "Both documents align on the importance of AI investment.",
-        }),
+        json.dumps(
+            {
+                "overview": "Document 1 is a financial report. Document 2 is a strategic plan.",
+                "common_themes": ["Revenue growth", "AI investment", "Q3 performance"],
+                "key_differences": [
+                    "Document 1 focuses on historical data",
+                    "Document 2 focuses on future strategy",
+                ],
+                "unique_insights": {
+                    "doc1": "Specific revenue figures by quarter",
+                    "doc2": "Strategic recommendations for next year",
+                },
+                "contradictions": [],
+                "synthesis": "Both documents align on the importance of AI investment.",
+            }
+        ),
         1200,
     )
 
@@ -208,9 +218,7 @@ def mock_claude_service(
     Using patch() as a context manager ensures the mock is
     removed after each test — no test pollution.
     """
-    with patch(
-        "app.services.claude_service.ClaudeService._call_claude"
-    ) as mock_call:
+    with patch("app.services.claude_service.ClaudeService._call_claude") as mock_call:
         # Configure return values based on what was most recently called
         # We'll set specific return values in individual tests
         mock_call.return_value = mock_claude_qa_response
@@ -218,6 +226,7 @@ def mock_claude_service(
 
 
 # ─── Document Store Helpers ───────────────────────────────────────────────────
+
 
 @pytest.fixture(autouse=True)
 def clear_document_store():
@@ -231,6 +240,7 @@ def clear_document_store():
     shouldn't affect another test's assertions.
     """
     from app.services import document_service as ds_module
+
     # Clear the store before test
     ds_module._document_store.clear()
     yield

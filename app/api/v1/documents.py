@@ -44,6 +44,7 @@ router = APIRouter(
 
 # ─── Upload ───────────────────────────────────────────────────────────────────
 
+
 @router.post(
     "/upload",
     response_model=DocumentUploadResponse,
@@ -134,6 +135,7 @@ async def upload_document(
 
 # ─── List Documents ───────────────────────────────────────────────────────────
 
+
 @router.get(
     "/",
     response_model=DocumentListResponse,
@@ -170,6 +172,7 @@ async def list_documents() -> DocumentListResponse:
 
 # ─── Get Single Document ──────────────────────────────────────────────────────
 
+
 @router.get(
     "/{document_id}",
     response_model=DocumentRecord,
@@ -204,6 +207,7 @@ async def get_document(document_id: str) -> DocumentRecord:
 
 # ─── Download Document ────────────────────────────────────────────────────────
 
+
 @router.get(
     "/{document_id}/download",
     summary="Download original document",
@@ -218,6 +222,7 @@ async def download_document(document_id: str) -> FileResponse:
     try:
         doc = document_service.get_document(document_id)
         from pathlib import Path
+
         file_path = Path(doc["file_path"])
 
         if not file_path.exists():
@@ -239,6 +244,7 @@ async def download_document(document_id: str) -> FileResponse:
 
 
 # ─── Delete Document ──────────────────────────────────────────────────────────
+
 
 @router.delete(
     "/{document_id}",

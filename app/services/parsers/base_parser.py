@@ -20,6 +20,7 @@ class ParseResult:
     Standardized result returned by every parser.
     Using a dataclass gives us free __repr__, __eq__, and type hints.
     """
+
     # The extracted text content
     text: str
 
@@ -133,6 +134,7 @@ class BaseParser(ABC):
 
         # Remove excessive blank lines (more than 2 consecutive)
         import re
+
         text = re.sub(r"\n{3,}", "\n\n", text)
 
         # Remove null bytes and other control characters

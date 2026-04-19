@@ -78,8 +78,7 @@ class PDFParser(BaseParser):
             doc = fitz.open(str(file_path))
             if page_number < 1 or page_number > len(doc):
                 raise ValueError(
-                    f"Page {page_number} does not exist. "
-                    f"Document has {len(doc)} pages."
+                    f"Page {page_number} does not exist. " f"Document has {len(doc)} pages."
                 )
             page = doc[page_number - 1]
             text = page.get_text("text")
@@ -96,11 +95,11 @@ class PDFParser(BaseParser):
             page_count = len(doc)
             doc.close()
             return {
-                "title":   metadata.get("title", ""),
-                "author":  metadata.get("author", ""),
+                "title": metadata.get("title", ""),
+                "author": metadata.get("author", ""),
                 "subject": metadata.get("subject", ""),
                 "creator": metadata.get("creator", ""),
-                "pages":   page_count,
+                "pages": page_count,
             }
         except Exception:
             return {}

@@ -60,7 +60,7 @@ class ParserService:
         # Truncate if text exceeds Claude's context window
         if len(result.text) > Limits.MAX_TEXT_CHARS_FOR_CLAUDE:
             original_length = len(result.text)
-            result.text = result.text[:Limits.MAX_TEXT_CHARS_FOR_CLAUDE]
+            result.text = result.text[: Limits.MAX_TEXT_CHARS_FOR_CLAUDE]
             result.warnings.append(
                 f"Document text was truncated from {original_length:,} to "
                 f"{Limits.MAX_TEXT_CHARS_FOR_CLAUDE:,} characters "

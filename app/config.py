@@ -53,7 +53,7 @@ class Settings(BaseSettings):
 
     # ─── Redis Cache ──────────────────────────────────────────────────────────
     REDIS_URL: str = "redis://localhost:6379"
-    CACHE_TTL_SECONDS: int = 3600   # 1 hour default
+    CACHE_TTL_SECONDS: int = 3600  # 1 hour default
     CACHE_ENABLED: bool = True
 
     # ─── File Upload ──────────────────────────────────────────────────────────
@@ -79,8 +79,17 @@ class Settings(BaseSettings):
 
     # Human-readable file extensions (for error messages)
     ALLOWED_EXTENSIONS: list[str] = [
-        ".pdf", ".docx", ".doc", ".txt",
-        ".jpg", ".jpeg", ".png", ".tiff", ".tif", ".webp", ".bmp",
+        ".pdf",
+        ".docx",
+        ".doc",
+        ".txt",
+        ".jpg",
+        ".jpeg",
+        ".png",
+        ".tiff",
+        ".tif",
+        ".webp",
+        ".bmp",
     ]
 
     # ─── Computed Properties ──────────────────────────────────────────────────
@@ -114,13 +123,10 @@ class Settings(BaseSettings):
         """
         if not v or v == "sk-ant-your-key-here":
             raise ValueError(
-                "ANTHROPIC_API_KEY is not set. "
-                "Get your key from console.anthropic.com"
+                "ANTHROPIC_API_KEY is not set. " "Get your key from console.anthropic.com"
             )
         if not v.startswith("sk-ant-"):
-            raise ValueError(
-                "ANTHROPIC_API_KEY looks invalid — it should start with 'sk-ant-'"
-            )
+            raise ValueError("ANTHROPIC_API_KEY looks invalid — it should start with 'sk-ant-'")
         return v
 
     @field_validator("MAX_FILE_SIZE_MB")
@@ -140,7 +146,9 @@ class Settings(BaseSettings):
         if v < 100:
             raise ValueError("CLAUDE_MAX_TOKENS must be at least 100")
         if v > 8192:
-            raise ValueError("CLAUDE_MAX_TOKENS cannot exceed 8192 for Claude claude-sonnet-4-20250514")
+            raise ValueError(
+                "CLAUDE_MAX_TOKENS cannot exceed 8192 for Claude claude-sonnet-4-20250514"
+            )
         return v
 
 
